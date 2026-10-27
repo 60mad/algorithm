@@ -1,0 +1,123 @@
+{
+ "tanggal": "2026-10-26",
+ "simulasi": true,
+ "item": [
+  {
+   "judul": "Rancangan kebijakan contoh K",
+   "kategori": "politik",
+   "skor": 80,
+   "kecepatan": 1.96,
+   "k_kecepatan": 0.655,
+   "k_sumber": 0.9,
+   "k_volume": 1.0,
+   "ada_riwayat": true,
+   "jumlah_sumber": 9,
+   "sumber": [
+    "media0.id",
+    "media1.id",
+    "media2.id",
+    "media3.id",
+    "media4.id",
+    "media5.id",
+    "media6.id",
+    "media7.id"
+   ],
+   "status": "lintas sumber"
+  },
+  {
+   "judul": "Lagu contoh A",
+   "kategori": "musik",
+   "skor": 72,
+   "kecepatan": 2.03,
+   "k_kecepatan": 0.675,
+   "k_sumber": 0.6,
+   "k_volume": 1.0,
+   "ada_riwayat": true,
+   "jumlah_sumber": 3,
+   "sumber": [
+    "Last.fm",
+    "Spotify",
+    "YouTube"
+   ],
+   "status": "lintas sumber"
+  },
+  {
+   "judul": "Remix contoh D",
+   "kategori": "musik",
+   "skor": 62,
+   "kecepatan": 5.72,
+   "k_kecepatan": 1,
+   "k_sumber": 0.2,
+   "k_volume": 0.278,
+   "ada_riwayat": true,
+   "jumlah_sumber": 1,
+   "sumber": [
+    "YouTube"
+   ],
+   "status": "belum terverifikasi"
+  },
+  {
+   "judul": "Film contoh F",
+   "kategori": "film",
+   "skor": 62,
+   "kecepatan": 1.46,
+   "k_kecepatan": 0.488,
+   "k_sumber": 0.6,
+   "k_volume": 1.0,
+   "ada_riwayat": true,
+   "jumlah_sumber": 3,
+   "sumber": [
+    "Reddit",
+    "TMDB",
+    "YouTube"
+   ],
+   "status": "lintas sumber"
+  },
+  {
+   "judul": "Rumor sekuel contoh I",
+   "kategori": "film",
+   "skor": 59,
+   "kecepatan": 3.82,
+   "k_kecepatan": 1,
+   "k_sumber": 0.2,
+   "k_volume": 0.13,
+   "ada_riwayat": true,
+   "jumlah_sumber": 1,
+   "sumber": [
+    "Reddit"
+   ],
+   "status": "belum terverifikasi"
+  },
+  {
+   "judul": "Isu contoh M beredar",
+   "kategori": "politik",
+   "skor": 54,
+   "kecepatan": 9.59,
+   "k_kecepatan": 1,
+   "k_sumber": 0.1,
+   "k_volume": 0.063,
+   "ada_riwayat": true,
+   "jumlah_sumber": 1,
+   "sumber": [
+    "media1.id"
+   ],
+   "status": "belum terverifikasi"
+  },
+  {
+   "judul": "Penyanyi contoh E",
+   "kategori": "musik",
+   "skor": 20,
+   "kecepatan": 0.06,
+   "k_kecepatan": 0.019,
+   "k_sumber": 0.4,
+   "k_volume": 0.359,
+   "ada_riwayat": true,
+   "jumlah_sumber": 2,
+   "sumber": [
+    "Last.fm",
+    "YouTube"
+   ],
+   "status": "dua sumber"
+  }
+ ]
+}
