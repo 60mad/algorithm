@@ -34,6 +34,22 @@ def youtube():
     return [("musik", v["snippet"]["title"], int(v["statistics"].get("viewCount", 0)), "YouTube")
             for v in d["items"]]
 
+def yt_viral():
+    """Komedi, hiburan, dan chart umum YouTube Indonesia. Video yang ada di chart kategori DAN chart umum dihitung lintas sumber."""
+    k = os.environ["YT_KEY"]; rows = []
+    base = ("https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular"
+            f"&regionCode=ID&maxResults=25&key={k}")
+    for cat, label in (("23", "YouTube Komedi"), ("24", "YouTube Hiburan"), ("", "YouTube Populer")):
+        try:
+            d = get(base + (f"&videoCategoryId={cat}" if cat else ""))
+        except Exception as e:
+            print(f"[lewati] {label}: {e!r}"); continue
+        for v in d.get("items", []):
+            if not cat and v["snippet"].get("categoryId") == "10":
+                continue  # video musik sudah punya kategori sendiri
+            rows.append(("viral", v["snippet"]["title"], int(v["statistics"].get("viewCount", 0)), label))
+    return rows
+
 def gdelt():
     """Artikel berita Indonesia 24 jam terakhir, dikelompokkan per topik. Sumber = nama media."""
     q = urllib.parse.quote("(politik OR DPR OR presiden OR pemerintah) sourcecountry:ID")
@@ -56,6 +72,8 @@ DEMO = [
  ("musik", "Penyanyi contoh E", [90,88,92,95,91,94,97], ["Last.fm","YouTube"]),
  ("film", "Film contoh F", [50,55,70,95,120,170,230], ["TMDB","YouTube","Reddit"]),
  ("film", "Rumor sekuel contoh I", [10,12,11,14,20,45,90], ["Reddit"]),
+ ("viral", "Video komedi contoh P", [30,28,35,40,90,160,240], ["YouTube Komedi","YouTube Populer"]),
+ ("viral", "Sketsa contoh Q", [12,10,15,14,18,60,130], ["YouTube Hiburan"]),
  ("politik", "Rancangan kebijakan contoh K", [30,35,40,60,100,160,210], [f"media{i}.id" for i in range(9)]),
  ("politik", "Isu contoh M beredar", [4,5,4,6,9,40,120], ["media1.id"]),
 ]
@@ -92,7 +110,7 @@ def hitung(item, riwayat):
             lalu = [h[kk][src] for h in riwayat if src in h.get(kk, {})]
             if len(lalu) >= 3 and sum(lalu): rasio.append(n / (sum(lalu) / len(lalu)) - 1)
         vel = sum(rasio) / len(rasio) if rasio else None
-        cap = 10 if e["kat"] == "politik" else 5
+        cap = {"politik": 10, "viral": 3}.get(e["kat"], 5)
         ns, nl = min(len(e["sumber"]) / cap, 1), e["nilai"] / maks[e["kat"]]
         if vel is None:   # riwayat belum cukup: bobot kecepatan dibagi ke dua ukuran lain
             w = (0, BOBOT[1] / (BOBOT[1] + BOBOT[2]), BOBOT[2] / (BOBOT[1] + BOBOT[2])); nv = 0
@@ -119,9 +137,11 @@ def main():
         rows, riwayat = demo()
     else:
         rows = []
-        for f in (tmdb, lastfm, youtube, gdelt):
-            try: rows += f()
-            except Exception as e: print(f"[lewati] {f.__name__}: {e!r}")
+        for f in (tmdb, lastfm, youtube, yt_viral, gdelt):
+            try:
+                r = f(); rows += r; print(f"[ok] {f.__name__}: {len(r)} baris")
+            except Exception as e:
+                print(f"[lewati] {f.__name__}: {e!r}")
         tgl = sorted(t for t in riwayat_all if t < a.tanggal)[-6:]
         riwayat = [riwayat_all[t] for t in tgl]
     item = gabung(rows)
