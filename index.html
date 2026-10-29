@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar Tren Harian</title>
+<style>
+:root{--bg:#edf0f4;--surface:#fff;--ink:#16213a;--mute:#5b667d;--line:#d6dce6;--musik:#6246ea;--film:#c27c0e;--politik:#0b7f82;--warn:#b4401f;--ok:#1d7a4a}
+@media (prefers-color-scheme:dark){:root{--bg:#10151f;--surface:#192030;--ink:#e8ecf4;--mute:#9aa5bd;--line:#2c3650;--musik:#9c8cff;--film:#f0b43c;--politik:#46c2c4;--warn:#ff8a65;--ok:#5fd596;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 18px 60px}
+h1{font:700 clamp(1.7rem,5vw,2.4rem)/1.15 system-ui,sans-serif;margin:0 0 4px;letter-spacing:-.02em}
+.tgl{color:var(--mute);margin:0 0 16px}
+.note{background:var(--surface);border:1px solid var(--warn);color:var(--warn);padding:8px 12px;border-radius:8px;font-size:.92rem;margin-bottom:16px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tab{font:600 .95rem inherit;font-family:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 16px;border-radius:99px;cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab:focus-visible,.rh:focus-visible,input:focus-visible{outline:3px solid var(--musik);outline-offset:2px}
+.item{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.rh{all:unset;box-sizing:border-box;display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;width:100%;padding:14px 16px;cursor:pointer}
+.score{font:700 1.5rem system-ui,sans-serif;text-align:center;color:var(--c)}
+.score small{display:block;font:400 .72rem system-ui,sans-serif;color:var(--mute)}
+.ttl{font-weight:600;font-size:1.05rem;line-height:1.3}
+.meta{color:var(--mute);font-size:.88rem;margin-top:2px}
+.up{color:var(--ok);font-weight:600}.flat{color:var(--mute);font-weight:600}
+.badge{display:inline-block;font-size:.8rem;font-weight:600;padding:1px 8px;border-radius:99px;border:1px solid currentColor;margin-left:6px}
+.b-ok{color:var(--ok)}.b-mid{color:var(--film)}.b-no{color:var(--warn)}
+.detail{display:none;padding:4px 16px 16px 72px;border-top:1px dashed var(--line);font-size:.93rem}
+.item.open .detail{display:block}
+.brk,.sl{display:grid;grid-template-columns:130px 1fr 44px;gap:8px;align-items:center;margin:6px 0}
+.track{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--c)}
+.chips span{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 8px;margin:2px 4px 2px 0;font-size:.85rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:26px}
+.panel h2{font-size:1.15rem;margin:0 0 6px}
+.sl{grid-template-columns:150px 1fr 40px}.sl input{width:100%}
+.meta2{color:var(--mute);font-size:.88rem;margin:10px 0 0}
+@media (max-width:560px){.detail{padding-left:16px}.brk{grid-template-columns:100px 1fr 40px}.sl{grid-template-columns:110px 1fr 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Radar tren harian</h1>
+  <p class="tgl" id="tgl"></p>
+  <div class="note" id="note" hidden></div>
+  <div class="bar" id="tabs"></div>
+  <div id="list"></div>
+  <div class="panel">
+    <h2>Atur bobot skor</h2>
+    <div class="sl"><label for="w1">Kecepatan naik</label><input id="w1" type="range" min="0" max="10" value="5"><span id="v1"></span></div>
+    <div class="sl"><label for="w2">Jumlah sumber</label><input id="w2" type="range" min="0" max="10" value="3"><span id="v2"></span></div>
+    <div class="sl"><label for="w3">Volume hari ini</label><input id="w3" type="range" min="0" max="10" value="2"><span id="v3"></span></div>
+    <p class="meta2">Skor mengukur perhatian, bukan kebenaran atau kualitas. Topik yang hanya muncul di satu sumber diberi label “belum terverifikasi”. Kalau riwayat belum cukup 3 hari, bobot kecepatan naik dialihkan ke dua ukuran lain.</p>
+  </div>
+</div>
+<script>
+var EMBED={"tanggal": "2026-10-26", "simulasi": true, "item": [{"judul": "Rancangan kebijakan contoh K", "kategori": "politik", "skor": 80, "kecepatan": 1.96, "k_kecepatan": 0.655, "k_sumber": 0.9, "k_volume": 1.0, "ada_riwayat": true, "jumlah_sumber": 9, "sumber": ["media0.id", "media1.id", "media2.id", "media3.id", "media4.id", "media5.id", "media6.id", "media7.id"], "status": "lintas sumber"}, {"judul": "Lagu contoh A", "kategori": "musik", "skor": 72, "kecepatan": 2.03, "k_kecepatan": 0.675, "k_sumber": 0.6, "k_volume": 1.0, "ada_riwayat": true, "jumlah_sumber": 3, "sumber": ["Last.fm", "Spotify", "YouTube"], "status": "lintas sumber"}, {"judul": "Remix contoh D", "kategori": "musik", "skor": 62, "kecepatan": 5.72, "k_kecepatan": 1, "k_sumber": 0.2, "k_volume": 0.278, "ada_riwayat": true, "jumlah_sumber": 1, "sumber": ["YouTube"], "status": "belum terverifikasi"}, {"judul": "Film contoh F", "kategori": "film", "skor": 62, "kecepatan": 1.46, "k_kecepatan": 0.488, "k_sumber": 0.6, "k_volume": 1.0, "ada_riwayat": true, "jumlah_sumber": 3, "sumber": ["Reddit", "TMDB", "YouTube"], "status": "lintas sumber"}, {"judul": "Rumor sekuel contoh I", "kategori": "film", "skor": 59, "kecepatan": 3.82, "k_kecepatan": 1, "k_sumber": 0.2, "k_volume": 0.13, "ada_riwayat": true, "jumlah_sumber": 1, "sumber": ["Reddit"], "status": "belum terverifikasi"}, {"judul": "Isu contoh M beredar", "kategori": "politik", "skor": 54, "kecepatan": 9.59, "k_kecepatan": 1, "k_sumber": 0.1, "k_volume": 0.063, "ada_riwayat": true, "jumlah_sumber": 1, "sumber": ["media1.id"], "status": "belum terverifikasi"}, {"judul": "Penyanyi contoh E", "kategori": "musik", "skor": 20, "kecepatan": 0.06, "k_kecepatan": 0.019, "k_sumber": 0.4, "k_volume": 0.359, "ada_riwayat": true, "jumlah_sumber": 2, "sumber": ["Last.fm", "YouTube"], "status": "dua sumber"}]};
+var CAT={musik:{n:"Musik",c:"var(--musik)"},film:{n:"Film",c:"var(--film)"},politik:{n:"Politik",c:"var(--politik)"}};
+var D=null,filter="semua",open={},$=function(i){return document.getElementById(i)};
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function weights(){var a=[+$("w1").value,+$("w2").value,+$("w3").value],t=a[0]+a[1]+a[2]||1;
+  for(var i=0;i<3;i++)$("v"+(i+1)).textContent=Math.round(a[i]/t*100)+"%";return a;}
+function compute(){
+  var a=weights();
+  return D.item.map(function(d){
+    var w=a.slice(); if(!d.ada_riwayat)w[0]=0;
+    var t=w[0]+w[1]+w[2]||1; w=w.map(function(x){return x/t});
+    var s=Math.round((d.k_kecepatan*w[0]+d.k_sumber*w[1]+d.k_volume*w[2])*100);
+    return Object.assign({},d,{s:s,w:w});
+  }).sort(function(x,y){return y.s-x.s});
+}
+function status(n){return n>=3?'<span class="badge b-ok">Lintas sumber</span>':n===2?'<span class="badge b-mid">Dua sumber</span>':'<span class="badge b-no">Belum terverifikasi</span>'}
+function brk(l,v,w){return '<div class="brk"><span>'+l+'</span><div class="track"><div class="fill" style="width:'+Math.round(v*100)+'%"></div></div><span>'+Math.round(v*w*100)+'</span></div>'}
+function render(){
+  var items=compute().filter(function(d){return filter==="semua"||d.kategori===filter});
+  if(!items.length){$("list").innerHTML='<p class="meta">Belum ada topik di kategori ini.</p>';return}
+  $("list").innerHTML=items.map(function(d){
+    var k=d.judul,v=d.kecepatan===null?'<span class="flat">riwayat belum cukup</span>':d.kecepatan>0.15?'<span class="up">naik '+Math.round(d.kecepatan*100)+'%</span>':'<span class="flat">stabil</span>';
+    var x="";
+    if(d.kategori==="politik")x='<p style="margin:8px 0 0">Diberitakan oleh <b>'+d.jumlah_sumber+' media</b>. '+(d.jumlah_sumber<3?'<span style="color:var(--warn)">Terlalu sedikit untuk membandingkan sudut pandang. Cek sumber primernya dulu.</span>':'Cukup untuk membandingkan beberapa sudut pandang sebelum membuat konten.')+'</p>';
+    if(d.jumlah_sumber<2)x+='<p style="margin:8px 0 0;color:var(--warn)">Hanya ramai di satu tempat. Tunggu muncul di sumber lain.</p>';
+    return '<div class="item'+(open[k]?' open':'')+'" style="--c:'+CAT[d.kategori].c+'"><button class="rh" data-k="'+esc(k)+'" aria-expanded="'+!!open[k]+'"><div class="score">'+d.s+'<small>skor</small></div><div><div class="ttl">'+esc(d.judul)+'</div><div class="meta">'+CAT[d.kategori].n+', '+v+', '+d.jumlah_sumber+' sumber'+status(d.jumlah_sumber)+'</div></div></button><div class="detail"><div>Asal skor:</div>'+brk("Kecepatan naik",d.k_kecepatan,d.w[0])+brk("Jumlah sumber",d.k_sumber,d.w[1])+brk("Volume hari ini",d.k_volume,d.w[2])+'<div class="chips">'+d.sumber.map(function(s){return '<span>'+esc(s)+'</span>'}).join("")+'</div>'+x+'</div></div>';
+  }).join("");
+}
+function tabs(){$("tabs").innerHTML=[["semua","Semua"],["musik","Musik"],["film","Film"],["politik","Politik"]].map(function(x){return '<button class="tab" data-f="'+x[0]+'" aria-pressed="'+(filter===x[0])+'">'+x[1]+'</button>'}).join("")}
+function start(d,msg){
+  D=d;var t=new Date(d.tanggal+"T00:00:00");
+  $("tgl").textContent="Data per "+t.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  var m=msg||(d.simulasi?"Ini data simulasi, bukan data nyata.":"");
+  if(m){$("note").textContent=m;$("note").hidden=false}
+  tabs();render();
+}
+$("tabs").addEventListener("click",function(e){var b=e.target.closest(".tab");if(!b)return;filter=b.dataset.f;tabs();render()});
+$("list").addEventListener("click",function(e){var b=e.target.closest(".rh");if(!b)return;open[b.dataset.k]=!open[b.dataset.k];render()});
+["w1","w2","w3"].forEach(function(i){$(i).addEventListener("input",function(){if(D)render()})});
+weights();
+fetch("data/data.json?v="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){start(d)})
+.catch(function(){start(EMBED,"Tidak bisa membaca data/data.json (halaman dibuka langsung dari file, atau data belum ada). Menampilkan simulasi bawaan.")});
+</script>
+</body>
+</html>
