@@ -1,0 +1,24 @@
+name: Tren harian
+on:
+  schedule:
+    - cron: "0 1 * * *"   # 08.00 WIB
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  ambil:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python ambil_tren.py
+        env:
+          TMDB_KEY: ${{ secrets.TMDB_KEY }}
+          LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
+          YT_KEY: ${{ secrets.YT_KEY }}
+      - run: |
+          git config user.name "radar-tren"
+          git config user.email "bot@users.noreply.github.com"
+          git add data && git commit -m "data $(date -u +%F)" || exit 0
+          git push
